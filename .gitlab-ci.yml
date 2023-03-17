@@ -25,6 +25,5 @@ Deploy app on EKS:
   script:
     - cd .kubernetes
     - sed -i 's/<VERSION>/'${CI_COMMIT_SHORT_SHA}'/g' deployment.yaml
-    - cp ${KUBECONFIG} ~/.kube/config
     - kubectl apply -f deployment.yaml
     - kubectl rollout status deployments
