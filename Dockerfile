@@ -1,32 +1,23 @@
-# stage1 as builder
-FROM node:alpine as builder
+FROM node:alpine as build-stage
 
 WORKDIR /app
 
-# copy the package.json to install dependencies
-COPY package.json package-lock.json ./
+COPY package.json ./
 
-# Install the dependencies and make the folder
 RUN npm install
 
 COPY . .
 
-# Build the project and copy the files
 RUN npm run build
 
+RUN pwd && ls 
 
-FROM nginx:alpine
+FROM nginx:alpine as prod-stage
 
-#!/bin/sh
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY ./nginx/default.conf /etc/nginx/nginx.conf
+COPY --from=build-stage /app/out /usr/share/nginx/html
 
-## Remove default nginx index page
-RUN rm -rf /usr/share/nginx/html/*
+EXPOSE 80
 
-# Copy from the stahg 1
-COPY --from=builder /app /usr/share/nginx/html
-
-EXPOSE 3000 80
-
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
