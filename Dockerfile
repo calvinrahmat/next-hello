@@ -1,23 +1,20 @@
-FROM node:alpine as build-stage
+# Use the official Node.js 16 image as a parent image
+FROM node:16
 
+# Set the working directory to /app
 WORKDIR /app
 
-COPY package.json ./
+# Copy package.json and package-lock.json to the container
+COPY package*.json ./
 
+# Install dependencies
 RUN npm install
 
+# Copy the rest of the application code to the container
 COPY . .
 
+# Build the application for production
 RUN npm run build
 
-RUN pwd && ls 
-
-FROM nginx:alpine as prod-stage
-
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
-
-COPY --from=build-stage /app/out /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Set the command to start the application in development mode
+CMD ["npm", "run", "dev"]
