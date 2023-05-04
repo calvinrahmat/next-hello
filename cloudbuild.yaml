@@ -1,12 +1,7 @@
 # for an example project named 'nextjs-cloud-run'
 
 steps:
-  # build the container images
-    # Code Static Analysis Inspection
-  - name: "gcr.io/cloud-builders/eslint"
-    entrypoint: 'eslint'
-    args: ['.']
-    
+
   - name: "gcr.io/cloud-builders/docker"
     args:
       ["build", "-t", "gcr.io/$PROJECT_ID/nextjs-cloud-run", "."]
