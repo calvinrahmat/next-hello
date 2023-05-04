@@ -2,19 +2,24 @@
 
 steps:
   # build the container images
+    # Code Static Analysis Inspection
+  - name: "gcr.io/cloud-builders/eslint"
+    entrypoint: 'eslint'
+    args: ['.']
+    
   - name: "gcr.io/cloud-builders/docker"
     args:
       ["build", "-t", "gcr.io/$PROJECT_ID/nextjs-cloud-run", "."]
-  - id: scan
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+      
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: /bin/bash
     args:
     - -c
     - |
-       gcloud artifacts docker images scangcr.io/$PROJECT_ID/nextjs-cloud-run \
+       gcloud artifacts docker images scan gcr.io/$PROJECT_ID/nextjs-cloud-run \
        --format='value(response.scan)' > /workspace/scan_id.txt
-  - id: severity check
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+       
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: /bin/bash
     args:
      - -c
